@@ -6,7 +6,7 @@ Create a food ordering system for restaurants and foodcourts.
 ---
 ## Steps
 ### Phase 1: Create the models and controllers
-~~1. Create project with postgresql.~~
+1. ~~Create project with postgresql.~~
 2. Create the Restaurant scaffold (i.e. Restaurant model, RestaurantController and the JSON views).
 3. Create the Kitchen scaffold (i.e. Kitchen model, KitchenController and the JSON views).
 4. Create the RestaurantManager model
