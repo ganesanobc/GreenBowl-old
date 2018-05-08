@@ -21,6 +21,7 @@ Create a food ordering system for restaurants and foodcourts.
 13. Create the OrderItem scaffold (i.e. OrderItem model, OrderItemController and the JSON views) and update relationships in Order and Kitchen models.
 14. Customise the user models to match schema.
 15. Install ActiveAdmin for Admin(Devise) and register the following resources: Restaurant, Kitchen, Category, and OrderItem
+
 *NOTE: while Product and ProductVariant models are suppose to be administered within the ActiveAdmin interface we will create a separate interface for them.
 Instead we will manipulate them within Kitchen and Category resources*
 
@@ -38,7 +39,7 @@ Instead we will manipulate them within Kitchen and Category resources*
 4. create: assigns the current user as the manager via restaurant_managers association and commits the restaurant instance to database
 5. update: commits the changes to the restaurant instance to database
 
-- before_action :authenticated_by_restaurant_manager
+- **before_action** :authenticated_by_restaurant_manager
 
 ### CategoryController
 1. index: shows all categories for current restaurant
@@ -47,7 +48,7 @@ Instead we will manipulate them within Kitchen and Category resources*
 4. create: assigns the current restaurant as the owner and commits the category instance to database
 5. update: commits the changes to the category instance to database
 
-- before_action :authenticated_by_restaurant_manager
+- **before_action** :authenticated_by_restaurant_manager
 
 ### KitchenController
 1. index: shows all kitchens for current restaurant
@@ -56,8 +57,8 @@ Instead we will manipulate them within Kitchen and Category resources*
 4. create: assigns the current restaurant as the owner and commits the kitchen instance to database
 5. update: commits the changes to the kitchen instance to database
 
-- before_action :authenticated_by_restaurant_manager
-- before_action :authenticated_by_kitchen_operator only:[:show, :edit, :update] -> scoped to the assigned kitchen_operator
+- **before_action** :authenticated_by_restaurant_manager
+- **before_action** :authenticated_by_kitchen_operator only:[:show, :edit, :update] -> scoped to the assigned kitchen_operator
 
 ### ProductController
 1. index: shows all products for current kitchen
@@ -66,8 +67,8 @@ Instead we will manipulate them within Kitchen and Category resources*
 4. create: assigns the current kitchen as the owner and commits the product instance to database; also commits any new instances to product category to database
 5. update: commits the changes to the product instance to database; also commits any new instances or deletes existing instances to product category to database
 
-- before_action :authenticated_by_restaurant_manager
-- before_action :authenticated_by_kitchen_operator -> scoped to the assigned kitchen_operator of the kitchen
+- **before_action** :authenticated_by_restaurant_manager
+- **before_action** :authenticated_by_kitchen_operator -> scoped to the assigned kitchen_operator of the kitchen
 
 ### ProductVariantController
 1. index: shows all product variants for current product
@@ -76,8 +77,8 @@ Instead we will manipulate them within Kitchen and Category resources*
 4. create: assigns the current product as the owner and commits the product variant instance to database
 5. update: commits the changes to the product variant instance to database
 
-- before_action :authenticated_by_restaurant_manager
-- before_action :authenticated_by_kitchen_operator -> scoped to the assigned kitchen_operator of the kitchen
+- **before_action** :authenticated_by_restaurant_manager
+- **before_action** :authenticated_by_kitchen_operator -> scoped to the assigned kitchen_operator of the kitchen
 
 ### OrderController
 1. index: shows all orders for current customer
@@ -86,7 +87,7 @@ Instead we will manipulate them within Kitchen and Category resources*
 4. create: assigns the current customer as the owner and commits the order instance to database; It also asks the various order item controllers to starts the notification and payment processes
 5. update: commits the changes to the order instance to database
 
-- before_action :authenticated_by_customer, except: [:update]
+- **before_action** :authenticated_by_customer, except: [:update]
 
 ### OrderItemController
 1. index: shows all order items for current kitchen
@@ -95,8 +96,8 @@ Instead we will manipulate them within Kitchen and Category resources*
 4. create: assigns the current order and the associated product's kitchen as the owner and commits the order item instance to database; the item should also be registered into the notification register
 5. update: commits the changes to the order item instance to database
 
-- before_action :authenticated_by_customer, except: [:update]
-- before_action :authenticated_by_kitchen_operator, only: [:update]
+- **before_action** :authenticated_by_customer, except: [:update]
+- **before_action** :authenticated_by_kitchen_operator, only: [:update]
 
 ---
 ## Models
@@ -106,10 +107,10 @@ Instead we will manipulate them within Kitchen and Category resources*
 2. branch_name
 3. description:text
 
-* has_many :categories
-* has_many :kitchens
+* has_many :categories, **on_delete :cascade**
+* has_many :kitchens, **on_delete :cascade**
 * has_many :products through: :kitchens
-* has_many :restaurant_managers
+* has_many :restaurant_managers, **on_delete :cascade**
 * has_many :managers through: :restaurant_managers
 
 ### RestaurantManagers
@@ -122,16 +123,16 @@ Instead we will manipulate them within Kitchen and Category resources*
 
 - belongs_to :restaurant
 
-* has_many :products
-* has_many :order_items
-* has_one :kitchen_operator, class_name: managers
+* has_many :products, **on_delete :cascade**
+* has_many :order_items, **on_delete :nullify**
+* has_one :kitchen_operator, class_name: managers, **on_delete :nullify**
 
 ### Category
 1. title
 
 - belongs_to :restaurant
 
-* has_many :product_categories
+* has_many :product_categories, **on_delete :cascade**
 * has_many :products through: product_categories
 
 ### Product
@@ -141,8 +142,8 @@ Instead we will manipulate them within Kitchen and Category resources*
 4. price:decimal
 5. available:integer
 
-* has_many :product_variants
-* has_many :product_categories
+* has_many :product_variants, **on_delete :cascade**
+* has_many :product_categories, **on_delete :cascade**
 * has_many :categories through: product_categories
 
 ### ProductVariant
@@ -160,7 +161,7 @@ Instead we will manipulate them within Kitchen and Category resources*
 ### Order
 - belongs_to :customer
 
-* has_many :order_items
+* has_many :order_items, **on_delete :cascade**
 
 ### OrderItem
 1. quantity:integer
@@ -178,7 +179,7 @@ Instead we will manipulate them within Kitchen and Category resources*
 2. last_name
 3. mobile_number:integer
 
-* has_many :orders
+* has_many :orders, **on_delete :cascade**
 
 ### Admin < Devise
 1. first_name
@@ -187,10 +188,10 @@ Instead we will manipulate them within Kitchen and Category resources*
 4. role:integer
 
 *for role: restaurant manager*
-* has_many :restaurant_managers
+* has_many :restaurant_managers, **on_delete :cascade**
 * has_many :restaurants through: :restaurant_managers
 
 *for role: kitchen operator*
-* has_one :kitchen
+* has_one :kitchen, **on_delete :cascade**
 * has_many :products through: :kitchen
 * has_many :order_items through: :kitchen
