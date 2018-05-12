@@ -1,8 +1,9 @@
 class Kitchen < ApplicationRecord
   # relationships
   belongs_to :restaurant
-  
+
   has_many :products
+  has_many :order_items
 
   def operator
     if self.operator_id
@@ -11,6 +12,10 @@ class Kitchen < ApplicationRecord
     else
       nil
     end
+  end
+
+  def operator=(another_operator)
+    self.operator_id = another_operator ? another_operator.id : nil
   end
 
   # validations

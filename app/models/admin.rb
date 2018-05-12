@@ -12,7 +12,7 @@ class Admin < ApplicationRecord
     #ActiveRecord::Base.connection.execute(sql)
     Restaurant.find_by_sql(sql)
   end
-
+  
   # relationships: kitchen operators
   has_one :kitchen
 
