@@ -13,7 +13,7 @@ Create a food ordering system for restaurants and foodcourts.
 5. ~~Customise the user models to match schema (ref: https://github.com/plataformatec/devise/wiki/How-to-Setup-Multiple-Devise-User-Models)~~
 6. ~~Create the RestaurantManager model~~
 7. ~~db:migrate~~
-8. Add uniqueness constraint to Restaurant model and Kitchen model (scoped to Restaurant)
+8. ~~Add uniqueness constraint to Restaurant model and Kitchen model (scoped to Restaurant)~~
 9. Add authentications and roles to Restaurant and Kitchen controllers
 10. Add seed values
 11. Test

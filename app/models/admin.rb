@@ -5,14 +5,17 @@ class Admin < ApplicationRecord
          :recoverable, :rememberable, :trackable, :validatable
 
 
-  # constants
-  enum role: [:manager, :kitchen_operator, :admin]
-
   # relationships: restaurant managers
   has_many :restaurant_managers
-  has_many :restaurants, through: :restaurant_managers
+  def restaurants
+    sql = "SELECT restaurants.* FROM restaurants INNER JOIN restaurant_managers ON restaurants.id = restaurant_managers.restaurant_id WHERE restaurant_managers.manager_id = #{self.id} ORDER BY restaurants.id ASC LIMIT 11"
+    #ActiveRecord::Base.connection.execute(sql)
+    Restaurant.find_by_sql(sql)
+  end
 
   # relationships: kitchen operators
   has_one :kitchen
 
+  # validations
+  enum role: [:manager, :operator, :admin]
 end
