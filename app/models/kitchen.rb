@@ -1,6 +1,9 @@
 class Kitchen < ApplicationRecord
   # relationships
   belongs_to :restaurant
+  
+  has_many :products
+
   def operator
     if self.operator_id
       sql = "SELECT admins.* FROM admins WHERE admins.id = #{self.operator_id} LIMIT 1"

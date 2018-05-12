@@ -12,27 +12,36 @@ Create a food ordering system for restaurants and foodcourts.
 4. ~~Install devise gem and create Customer and Manager tables~~
 5. ~~Customise the user models to match schema (ref: https://github.com/plataformatec/devise/wiki/How-to-Setup-Multiple-Devise-User-Models)~~
 6. ~~Create the RestaurantManager model~~
-7. ~~db:migrate~~
-8. ~~Add uniqueness constraint to Restaurant model and Kitchen model (scoped to Restaurant)~~
-9. Add authentications and roles to Restaurant and Kitchen controllers
-10. Add seed values
-11. Test
+7. ~~Add uniqueness constraint to Restaurant model and Kitchen model (scoped to Restaurant)~~
 
 ### Phase 2: Create the props
-1. Create the Category scaffold (i.e. Category model, CategoryController and the JSON views) and update relationships in Restaurant model.
-2. Create the Product scaffold (i.e. Product model, ProductController and the JSON views) and update relationships in Kitchen model.
-3. Create ProductCategory model and update relationships in Category and Product models.
-4. Create the ProductVariant scaffold (i.e. ProductVariant model, ProductVariantController and the JSON views) and update relationships in Product model.
-5. Create the Order scaffold (i.e. Order model, OrderController and the ERB views) and update relationships in Customer model.
-6. Create the OrderItem scaffold (i.e. OrderItem model, OrderItemController and the JSON views) and update relationships in Order and Kitchen models.
-7. Customise the user models to match schema.
-8. Install ActiveAdmin for Admin(Devise) and register the following resources: Restaurant, Kitchen, Category, and OrderItem
+1. ~~Create the Category scaffold (i.e. Category model, CategoryController and the JSON views) and update relationships in Restaurant model.~~
+2. ~~Create the Product scaffold (i.e. Product model, ProductController and the JSON views) and update relationships in Kitchen model.~~
+3. ~~Create ProductCategory model and update relationships in Category and Product models.~~
+4. ~~Add uniqueness constraint to Category model (scoped to Restaurant) and Product model (scoped to Kitchen)~~
+5. ~~Create the ProductVariant scaffold (i.e. ProductVariant model, ProductVariantController and the JSON views) and update relationships in Product model.~~
 
-*NOTE: while Product and ProductVariant models are suppose to be administered within the ActiveAdmin interface we will create a separate interface for them.
+### Phase 3: Create the ordering workflow
+1. Create the Order scaffold (i.e. Order model, OrderController and the ERB views) and update relationships in Customer model.
+2. Create the OrderItem scaffold (i.e. OrderItem model, OrderItemController and the JSON views) and update relationships in Order and Kitchen models.
+5. Install ActionCable
+
+### Phase 4: Security
+1. Customise the user models to match schema.
+2. Add authentications and roles to Restaurant and Kitchen controllers
+3. Add seed values
+4. Write and execute unit tests to test validations.
+5. Write and execute integration tests to test authentication and roles.
+
+### Phase 5: Administration Interface
+1. Install ActiveAdmin for Admin(Devise) and register the following resources: Restaurant, Kitchen, Category, and OrderItem
+
+*NOTE:
+While Product and ProductVariant models are suppose to be administered within the ActiveAdmin interface we will not create a separate interface for them.
 Instead we will manipulate them within Kitchen and Category resources*
 
-### Phase 3: Create the scenes
-1. Install ActionCable
+### Phase 6: Enhancements
+1. Add images
 2. TODO
 
 ---
@@ -131,7 +140,7 @@ Instead we will manipulate them within Kitchen and Category resources*
 
 * has_many :products, **on_delete :cascade**
 * has_many :order_items, **on_delete :nullify**
-* has_one :kitchen_operator, class_name: managers, **on_delete :nullify**
+* has_one :operator, class_name: managers, **on_delete :nullify**
 
 ### Category
 1. title
@@ -147,6 +156,8 @@ Instead we will manipulate them within Kitchen and Category resources*
 3. ingredients:text
 4. price:decimal
 5. available:integer
+
+- belongs_to :kitchen
 
 * has_many :product_variants, **on_delete :cascade**
 * has_many :product_categories, **on_delete :cascade**

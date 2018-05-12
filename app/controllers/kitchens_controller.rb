@@ -1,5 +1,12 @@
 class KitchensController < ApplicationController
+  # before_action :authenticate_admin!
+
+  # while manager can manage all the kitchens under him ...
+  # before_action :can_manage_kitchens?, only: [:index, :new, :create, :destroy]
+
+  # ... the kitchen operator should be allowed to manage his own kitchen except to delete it
   before_action :set_kitchen, only: [:show, :edit, :update, :destroy]
+  # before_action :can_manage_current_kitchen?, only: [:show, :edit, :update]
 
   # GET /kitchens
   # GET /kitchens.json
@@ -71,4 +78,16 @@ class KitchensController < ApplicationController
     def kitchen_params
       params.require(:kitchen).permit(:name, :description, :restaurant_id)
     end
+
+    # check if allowed to manage kitchens
+    def can_manage_kitchens?
+      current_admin.manager?
+    end
+
+    # check if allowed to manage the current kitchens
+    def can_manage_current_kitchen?
+      current_admin.manager? ||
+      (current_admin.operator? && current_admin.kitchen == @kitchen)
+    end
+
 end

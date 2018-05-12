@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_05_12_055302) do
+ActiveRecord::Schema.define(version: 2018_05_12_105001) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,6 +31,14 @@ ActiveRecord::Schema.define(version: 2018_05_12_055302) do
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_admins_on_email", unique: true
     t.index ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true
+  end
+
+  create_table "categories", force: :cascade do |t|
+    t.string "title"
+    t.bigint "restaurant_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["restaurant_id"], name: "index_categories_on_restaurant_id"
   end
 
   create_table "customers", force: :cascade do |t|
@@ -60,6 +68,38 @@ ActiveRecord::Schema.define(version: 2018_05_12_055302) do
     t.index ["restaurant_id"], name: "index_kitchens_on_restaurant_id"
   end
 
+  create_table "product_categories", force: :cascade do |t|
+    t.bigint "product_id"
+    t.bigint "category_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_product_categories_on_category_id"
+    t.index ["product_id"], name: "index_product_categories_on_product_id"
+  end
+
+  create_table "product_variants", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.decimal "add_on_price"
+    t.integer "available"
+    t.bigint "product_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_product_variants_on_product_id"
+  end
+
+  create_table "products", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.text "ingredients"
+    t.decimal "price"
+    t.integer "available"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "kitchen_id"
+    t.index ["kitchen_id"], name: "index_products_on_kitchen_id"
+  end
+
   create_table "restaurant_managers", force: :cascade do |t|
     t.bigint "restaurant_id"
     t.bigint "manager_id"
@@ -77,7 +117,12 @@ ActiveRecord::Schema.define(version: 2018_05_12_055302) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "categories", "restaurants"
   add_foreign_key "kitchens", "restaurants"
+  add_foreign_key "product_categories", "categories"
+  add_foreign_key "product_categories", "products"
+  add_foreign_key "product_variants", "products"
+  add_foreign_key "products", "kitchens"
   add_foreign_key "restaurant_managers", "admins", column: "manager_id"
   add_foreign_key "restaurant_managers", "restaurants"
 end
