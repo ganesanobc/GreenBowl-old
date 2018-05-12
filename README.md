@@ -5,29 +5,35 @@ Create a food ordering system for restaurants and foodcourts.
 
 ---
 ## Steps
-### Phase 1: Create the models and controllers
+### Phase 1: Create the actors
 1. ~~Create project with postgresql.~~
-2. Create the Restaurant scaffold (i.e. Restaurant model, RestaurantController and the JSON views).
-3. Create the Kitchen scaffold (i.e. Kitchen model, KitchenController and the JSON views).
-4. Create the RestaurantManager model
-5. Install devise gem and create Customer and Manager tables
-6. Customise the user models to match schema (ref: https://github.com/plataformatec/devise/wiki/How-to-Setup-Multiple-Devise-User-Models)
-7. db:migrate
-8. Create the Category scaffold (i.e. Category model, CategoryController and the JSON views) and update relationships in Restaurant model.
-9. Create the Product scaffold (i.e. Product model, ProductController and the JSON views) and update relationships in Kitchen model.
-10. Create ProductCategory model and update relationships in Category and Product models.
-11. Create the ProductVariant scaffold (i.e. ProductVariant model, ProductVariantController and the JSON views) and update relationships in Product model.
-12. Create the Order scaffold (i.e. Order model, OrderController and the ERB views) and update relationships in Customer model.
-13. Create the OrderItem scaffold (i.e. OrderItem model, OrderItemController and the JSON views) and update relationships in Order and Kitchen models.
-14. Customise the user models to match schema.
-15. Install ActiveAdmin for Admin(Devise) and register the following resources: Restaurant, Kitchen, Category, and OrderItem
+2. ~~Create the Restaurant scaffold (i.e. Restaurant model, RestaurantController and the JSON views).~~
+3. ~~Create the Kitchen scaffold (i.e. Kitchen model, KitchenController and the JSON views).~~
+4. ~~Install devise gem and create Customer and Manager tables~~
+5. ~~Customise the user models to match schema (ref: https://github.com/plataformatec/devise/wiki/How-to-Setup-Multiple-Devise-User-Models)~~
+6. ~~Create the RestaurantManager model~~
+7. ~~db:migrate~~
+8. Add uniqueness constraint to Restaurant model and Kitchen model (scoped to Restaurant)
+9. Add authentications and roles to Restaurant and Kitchen controllers
+10. Add seed values
+11. Test
+
+### Phase 2: Create the props
+1. Create the Category scaffold (i.e. Category model, CategoryController and the JSON views) and update relationships in Restaurant model.
+2. Create the Product scaffold (i.e. Product model, ProductController and the JSON views) and update relationships in Kitchen model.
+3. Create ProductCategory model and update relationships in Category and Product models.
+4. Create the ProductVariant scaffold (i.e. ProductVariant model, ProductVariantController and the JSON views) and update relationships in Product model.
+5. Create the Order scaffold (i.e. Order model, OrderController and the ERB views) and update relationships in Customer model.
+6. Create the OrderItem scaffold (i.e. OrderItem model, OrderItemController and the JSON views) and update relationships in Order and Kitchen models.
+7. Customise the user models to match schema.
+8. Install ActiveAdmin for Admin(Devise) and register the following resources: Restaurant, Kitchen, Category, and OrderItem
 
 *NOTE: while Product and ProductVariant models are suppose to be administered within the ActiveAdmin interface we will create a separate interface for them.
 Instead we will manipulate them within Kitchen and Category resources*
 
-### Phase 2: Create the ordering system
-16. Install ActionCable
-17. TODO
+### Phase 3: Create the scenes
+1. Install ActionCable
+2. TODO
 
 ---
 ## Controllers

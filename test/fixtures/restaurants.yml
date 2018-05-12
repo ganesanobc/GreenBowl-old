@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  brand_name: MyString
+  branch_name: MyString
+  description: MyText
+
+two:
+  brand_name: MyString
+  branch_name: MyString
+  description: MyText
