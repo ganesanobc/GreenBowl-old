@@ -12,9 +12,11 @@ class Admin < ApplicationRecord
     #ActiveRecord::Base.connection.execute(sql)
     Restaurant.find_by_sql(sql)
   end
-  
+
   # relationships: kitchen operators
   has_one :kitchen
+  has_many :products, through: :kitchen
+  has_many :order_items, through: :kitchen
 
   # validations
   enum role: [:manager, :operator, :admin]

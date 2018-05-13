@@ -1,10 +1,11 @@
 class OrderItemsController < ApplicationController
+  before_action :authenticate_admin!
   before_action :set_order_item, only: [:show, :edit, :update, :destroy]
 
   # GET /order_items
   # GET /order_items.json
   def index
-    @order_items = OrderItem.all
+    @order_items = current_admin.order_items
   end
 
   # GET /order_items/1
@@ -14,7 +15,7 @@ class OrderItemsController < ApplicationController
 
   # GET /order_items/new
   def new
-    @order_item = OrderItem.new
+    @order_item = current_admin.order_items.in_creation.build(order_item_params)
   end
 
   # GET /order_items/1/edit
@@ -24,7 +25,7 @@ class OrderItemsController < ApplicationController
   # POST /order_items
   # POST /order_items.json
   def create
-    @order_item = OrderItem.new(order_item_params)
+    @order_item = current_admin.order_items.in_creation.build(order_item_params)
 
     respond_to do |format|
       if @order_item.save
@@ -61,14 +62,30 @@ class OrderItemsController < ApplicationController
     end
   end
 
+  def accept
+    @order_item.accepted!
+  end
+
+  def reject
+    @order_item.rejected!
+  end
+
+  def prepared
+    @order_item.prepared!
+  end
+
+  def archive
+    @order_item.archived!
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_order_item
-      @order_item = OrderItem.find(params[:id])
+      @order_item = current_admin.order_items.find(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def order_item_params
-      params.require(:order_item).permit(:quantity, :state, :kitchen_id)
+      params.require(:order_item).permit(:quantity, :state, :kitchen_id, :product_id, :order_id)
     end
 end

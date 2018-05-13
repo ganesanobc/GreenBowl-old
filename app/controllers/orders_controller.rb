@@ -1,10 +1,11 @@
 class OrdersController < ApplicationController
-  before_action :set_order, only: [:show, :edit, :update, :destroy]
+  before_action :authenticate_customer!
+  before_action :set_order, only: [:show, :edit, :update, :destroy, :send_to_kitchen]
 
   # GET /orders
   # GET /orders.json
   def index
-    @orders = Order.all
+    @orders = current_customer.orders
   end
 
   # GET /orders/1
@@ -14,7 +15,7 @@ class OrdersController < ApplicationController
 
   # GET /orders/new
   def new
-    @order = Order.new
+    @order = current_customer.orders.build()
   end
 
   # GET /orders/1/edit
@@ -24,7 +25,7 @@ class OrdersController < ApplicationController
   # POST /orders
   # POST /orders.json
   def create
-    @order = Order.new(order_params)
+    @order = current_customer.orders.build(order_params)
 
     respond_to do |format|
       if @order.save
@@ -61,10 +62,33 @@ class OrdersController < ApplicationController
     end
   end
 
+  # send the current order to the kitchen before payment
+  def send_to_kitchen
+    @order.order_items.each do |item|
+      item.sent_to_kitchen!
+    end
+  end
+
+  # start the payment process for the order items that have been accepted by kitchen
+  def pay
+    total = 0
+    @order.order_items.each do |item|
+      if item.accepted?
+        sub_total += item.price
+        item.product_variants.each do |variant|
+          total += variant.add_on_price
+        end
+        total += sub_total * quantity
+        item.paid!
+      end
+    end
+    total
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_order
-      @order = Order.find(params[:id])
+      @order = current_customer.orders.find(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
