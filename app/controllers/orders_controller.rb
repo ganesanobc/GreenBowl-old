@@ -1,6 +1,6 @@
 class OrdersController < ApplicationController
   before_action :authenticate_customer!
-  before_action :set_order, only: [:show, :edit, :update, :destroy, :send_to_kitchen]
+  before_action :set_order, only: [:show, :edit, :update, :destroy, :send_to_kitchen, :pay]
 
   # GET /orders
   # GET /orders.json
@@ -12,7 +12,15 @@ class OrdersController < ApplicationController
   # GET /orders/1
   # GET /orders/1.json
   def show
-    # should show the selected order
+    # show the current order items
+    @order_items = @order.order_items
+
+    # show the menu at the bottom of page
+    restaurant = Restaurant.find(session[:restaurant])
+    if !restaurant.nil?
+      @restaurant_name = restaurant.brand_name
+      @products = restaurant.products
+    end
   end
 
   # POST /orders
@@ -23,18 +31,19 @@ class OrdersController < ApplicationController
     # else create a new order for the current customer
     @order = last_valid_open_order
 
-    respond_to do |format|
-      if @order.save
-        format.html { redirect_to @order, notice: 'Order was successfully created.' }
-        format.json { render :show, status: :created, location: @order }
-        # save the order to session and start the expiry
-        start_order_session(@order)
-        redirect_to restaurants_path
-      else
-        format.html { render :new }
-        format.json { render json: @order.errors, status: :unprocessable_entity }
-      end
-    end
+    # save the order to session and start the expiry
+    restart_order_session(@order)
+    redirect_to order_path(@order)
+
+    # respond_to do |format|
+    #   if @order.save
+    #     format.html { redirect_to @order, notice: 'Order was successfully created.' }
+    #     format.json { render :show, status: :created, location: @order }
+    #   else
+    #     format.html { render :new }
+    #     format.json { render json: @order.errors, status: :unprocessable_entity }
+    #   end
+    # end
   end
 
   # GET /orders/1/edit
@@ -68,9 +77,14 @@ class OrdersController < ApplicationController
 
   # send the current order to the kitchen before payment
   def send_to_kitchen
+    # send all the items to kitchen
     @order.order_items.each do |item|
       item.sent_to_kitchen!
     end
+
+    # save the order to session and start the expiry
+    restart_order_session(@order)
+    redirect_to order_path(@order)
   end
 
   # start the payment process for the order items that have been accepted by kitchen
@@ -108,21 +122,21 @@ class OrdersController < ApplicationController
     end
 
     def has_order_session_expired
-      session[:order_expires_at] < Time.current
+      !session[:order_expires_at].nil? && session[:order_expires_at] < Time.current
     end
 
-    def start_order_session(order)
+    def restart_order_session(order)
       session[:order] = order.id
       session[:order_expires_at] = Time.current + 15.minutes
     end
 
     # Get the last open order created by the customer in the last 30 mins
     def last_valid_open_order
-      order = Order.find(session[:order])
-      if has_order_session_expired
-        order.destroy if !order.nil?
+      order = Order.find(session[:order]) unless session[:order].nil?
+      if !order.nil?
+        order.destroy if order.open? && has_order_session_expired
         order = nil
       end
-      order = current_customer.orders.build() unless !order.nil? && order.open?
+      order = current_customer.orders.create!() if order.nil?
     end
 end

@@ -4,11 +4,7 @@ class ProductsController < ApplicationController
   # GET /products
   # GET /products.json
   def index
-    restaurant = Restaurant.find(session[:restaurant])
-    if !restaurant.nil?
-      @restaurant_name = restaurant.brand_name
-      @products = restaurant.products
-    end
+    @products = Product.all
   end
 
   # GET /products/1

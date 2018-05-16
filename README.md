@@ -24,13 +24,13 @@ Create a food ordering system for restaurants and foodcourts.
 ### Phase 3: Create the ordering workflow
 1. ~~Create the Order scaffold (i.e. Order model, OrderController and the ERB views) and update relationships in Customer model.~~
 2. ~~Create the OrderItem scaffold (i.e. OrderItem model, OrderItemController and the JSON views) and update relationships in Order and Kitchen models.~~
-3. Create workflow for Customer to browse and place an order
-  - Customer creates a new Order session
-  - Customer browses the products page
-  - Customer adds a new order item from product
-  - Customer browses the products page again
-  - Customer adds another new order item from product
-  - Customer sends order to kitchen 
+3. ~~Create workflow for Customer to browse and place an order~~
+  - ~~Customer creates a new Order session~~
+  - ~~Customer browses the products page~~
+  - ~~Customer adds a new order item from product~~
+  - ~~Customer browses the products page again~~
+  - ~~Customer adds another new order item from product~~
+  - ~~Customer sends order to kitchen~~
 4. Create workflow for Kitchen to accept new order items
   - Operator will view all new order items
   - Operator will accept some new order items

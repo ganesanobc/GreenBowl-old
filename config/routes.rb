@@ -3,7 +3,11 @@ Rails.application.routes.draw do
   resources :kitchens
   resources :categories
   resources :products
-  resources :orders
+  resources :orders do
+    member do
+      get :send_to_kitchen
+    end
+  end
   resources :order_items
   devise_for :admins, path: 'admins'
   devise_for :customers

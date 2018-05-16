@@ -1,7 +1,73 @@
+<p> Order #: <%= @order.id %></p>
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Ingredients</th>
+      <th>Price</th>
+      <th>Quantity</th>
+      <th>Sub-Total</th>
+      <th>State</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @order_items.each do |item| %>
+      <tr>
+        <% @product = item.selected_product %>
+        <td><%= @product.title %></td>
+        <td><%= @product.description %></td>
+        <td><%= @product.ingredients %></td>
+        <td>$ <%= @product.price %></td>
+        <td><%= item.quantity %></td>
+        <td>$ <%= item.quantity * @product.price %></td>
+        <td>$ <%= item.state %></td>
+        <td><%= link_to 'Destroy', item, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<p><%= link_to "Send to Kitchen", send_to_kitchen_order_path if @order_items.count > 0 %></p>
+
+<hr>
+
 <p>
-  <strong>Customer:</strong>
-  <%= @order.customer %>
+  <strong>You are now viewing the menu for: </strong>
+  <%= @restaurant_name %>
 </p>
 
-<%= link_to 'Edit', edit_order_path(@order) %> |
-<%= link_to 'Back', orders_path %>
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Ingredients</th>
+      <th>Price</th>
+      <th>Available</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @products.each do |product| %>
+      <tr>
+        <td><%= product.title %></td>
+        <td><%= product.description %></td>
+        <td><%= product.ingredients %></td>
+        <td><%= product.price %></td>
+        <td><%= product.available %></td>
+        <td>
+          <%= form_tag url_for(:controller => 'order_items', :action => 'create'), :method => 'post' do %>
+            <%= hidden_field_tag :product_id, product.id %>
+            <%= hidden_field_tag :kitchen_id, product.kitchen.id %>
+            <%= hidden_field_tag :order_id, @order.id %>
+            <%= hidden_field_tag :quantity, 1 %>
+            <%= submit_tag "Add to Order" %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

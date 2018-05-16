@@ -18,14 +18,8 @@ class RestaurantsController < ApplicationController
   # GET /restaurants/1
   # GET /restaurants/1.json
   def show
-    # if logged in as customer, then show the current restaurant's products
-    if !current_admin
-      if !current_customer
-        authenticate_customer!
-      end
-      session[:restaurant] = @restaurant.id
-      redirect_to products_path
-    end
+    # if not logged in as admin, then assume it is customer
+    customer_is_accessing_restaurant if current_admin.nil?
   end
 
   # GET /restaurants/new
@@ -96,5 +90,18 @@ class RestaurantsController < ApplicationController
     # check if allowed to manage current restaurant
     def can_manage_current_restaurant?
       current_admin.restaurant == @restaurant
+    end
+
+    # invalidates any existing order
+    def invalidate_order_session
+      session[:order_expires_at] = Time.current - 5.minutes
+    end
+
+    def customer_is_accessing_restaurant
+      if !@restaurant.nil?
+        invalidate_order_session unless @restaurant.id == session[:restaurant]
+        session[:restaurant] = @restaurant.id
+        redirect_to new_order_path
+      end
     end
 end

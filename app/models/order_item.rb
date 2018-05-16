@@ -12,6 +12,10 @@ class OrderItem < ApplicationRecord
     self.product_id = another_product ? another_product.id : nil
   end
 
+  def selected_product_id=(another_product_id)
+    self.product_id = another_product_id
+  end
+
   def parent_order
     self.order_id ? Order.find_by_id(self.order_id) : nil
   end

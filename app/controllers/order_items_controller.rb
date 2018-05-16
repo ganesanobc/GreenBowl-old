@@ -1,11 +1,10 @@
 class OrderItemsController < ApplicationController
-  before_action :authenticate_admin!
   before_action :set_order_item, only: [:show, :edit, :update, :destroy]
 
   # GET /order_items
   # GET /order_items.json
   def index
-    @order_items = current_admin.order_items
+    # @order_items = current_admin.order_items
   end
 
   # GET /order_items/1
@@ -15,7 +14,7 @@ class OrderItemsController < ApplicationController
 
   # GET /order_items/new
   def new
-    @order_item = current_admin.order_items.in_creation.build(order_item_params)
+    @order_item = OrderItem.new
   end
 
   # GET /order_items/1/edit
@@ -25,17 +24,25 @@ class OrderItemsController < ApplicationController
   # POST /order_items
   # POST /order_items.json
   def create
-    @order_item = current_admin.order_items.in_creation.build(order_item_params)
+    order = Order.find(order_item_params[:order_id])
+    kitchen = Kitchen.find(order_item_params[:kitchen_id])
 
-    respond_to do |format|
-      if @order_item.save
-        format.html { redirect_to @order_item, notice: 'Order item was successfully created.' }
-        format.json { render :show, status: :created, location: @order_item }
-      else
-        format.html { render :new }
-        format.json { render json: @order_item.errors, status: :unprocessable_entity }
-      end
-    end
+    @order_item = kitchen.order_items.in_creation.build(order_item_params)
+    @order_item.selected_product_id = order_item_params[:product_id]
+    @order_item.save!
+
+    restart_order_session(order)
+    redirect_to order_path(order)
+
+    # respond_to do |format|
+    #   if @order_item.save
+    #     format.html { redirect_to @order_item, notice: 'Order item was successfully created.' }
+    #     format.json { render :show, status: :created, location: @order_item }
+    #   else
+    #     format.html { render :new }
+    #     format.json { render json: @order_item.errors, status: :unprocessable_entity }
+    #   end
+    # end
   end
 
   # PATCH/PUT /order_items/1
@@ -55,11 +62,14 @@ class OrderItemsController < ApplicationController
   # DELETE /order_items/1
   # DELETE /order_items/1.json
   def destroy
+    parent_order = @order_item.parent_order
     @order_item.destroy
-    respond_to do |format|
-      format.html { redirect_to order_items_url, notice: 'Order item was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+    redirect_to order_path(parent_order)
+
+    # respond_to do |format|
+    #   format.html { redirect_to order_items_url, notice: 'Order item was successfully destroyed.' }
+    #   format.json { head :no_content }
+    # end
   end
 
   def accept
@@ -81,11 +91,16 @@ class OrderItemsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_order_item
-      @order_item = current_admin.order_items.find(params[:id])
+      @order_item = OrderItem.find(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def order_item_params
-      params.require(:order_item).permit(:quantity, :state, :kitchen_id, :product_id, :order_id)
+      params.permit(:quantity, :state, :kitchen_id, :product_id, :order_id)
+      #params.require(:order_item).permit(:quantity, :state, :kitchen_id, :product_id, :order_id)
+    end
+
+    def restart_order_session(order)
+      session[:order_expires_at] = Time.current + 15.minutes
     end
 end
