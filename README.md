@@ -31,16 +31,16 @@ Create a food ordering system for restaurants and foodcourts.
   - ~~Customer browses the products page again~~
   - ~~Customer adds another new order item from product~~
   - ~~Customer sends order to kitchen~~
-4. Create workflow for Kitchen to accept new order items
-  - Operator will view all new order items
-  - Operator will accept some new order items
-  - Operator will reject some new order items
-5. Create workflow for Customer to pay for accepted order items only
-  - Customer will view the revised order
-  - Customer will pay for order
-6. Create workflow for Kitchen to notify prepared status
-  - Operator will view all paid order items
-  - Operator will set one order item as prepared
+4. ~~Create workflow for Kitchen to accept new order items~~
+  - ~~Operator will view all new order items~~
+  - ~~Operator will accept some new order items~~
+  - ~~Operator will reject some new order items~~
+5. ~~Create workflow for Customer to pay for accepted order items only~~
+  - ~~Customer will view the revised order~~
+  - ~~Customer will pay for order~~
+6. ~~Create workflow for Kitchen to notify prepared status~~
+  - ~~Operator will view all paid order items~~
+  - ~~Operator will set one order item as prepared~~
 
 ### Phase 4: Security and Integration Testing
 1. Customise the user models to match schema.

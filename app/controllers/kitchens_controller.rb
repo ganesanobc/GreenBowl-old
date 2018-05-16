@@ -17,6 +17,7 @@ class KitchensController < ApplicationController
   # GET /kitchens/1
   # GET /kitchens/1.json
   def show
+    @order_items = @kitchen.order_items.where(state:['sent_to_kitchen','paid']).limit(20)
   end
 
   # GET /kitchens/new

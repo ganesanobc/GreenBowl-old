@@ -1,5 +1,5 @@
 class OrderItemsController < ApplicationController
-  before_action :set_order_item, only: [:show, :edit, :update, :destroy]
+  before_action :set_order_item, only: [:show, :edit, :update, :destroy, :accept, :reject, :prepared]
 
   # GET /order_items
   # GET /order_items.json
@@ -74,18 +74,17 @@ class OrderItemsController < ApplicationController
 
   def accept
     @order_item.accepted!
+    redirect_to kitchen_path(@order_item.kitchen)
   end
 
   def reject
     @order_item.rejected!
+    redirect_to kitchen_path(@order_item.kitchen)
   end
 
   def prepared
     @order_item.prepared!
-  end
-
-  def archive
-    @order_item.archived!
+    redirect_to kitchen_path(@order_item.kitchen)
   end
 
   private

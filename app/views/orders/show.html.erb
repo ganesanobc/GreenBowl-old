@@ -2,6 +2,7 @@
 <table>
   <thead>
     <tr>
+      <th>ID</th>
       <th>Title</th>
       <th>Description</th>
       <th>Ingredients</th>
@@ -9,14 +10,15 @@
       <th>Quantity</th>
       <th>Sub-Total</th>
       <th>State</th>
-      <th colspan="3"></th>
+      <th colspan="1"></th>
     </tr>
   </thead>
 
   <tbody>
     <% @order_items.each do |item| %>
+      <% @product = item.selected_product %>
       <tr>
-        <% @product = item.selected_product %>
+        <td><%= item.id %></td>
         <td><%= @product.title %></td>
         <td><%= @product.description %></td>
         <td><%= @product.ingredients %></td>
@@ -27,9 +29,15 @@
         <td><%= link_to 'Destroy', item, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
     <% end %>
+      <tr>
+        <td colspan="5"></td>
+        <td>$ <%= @order.total %></td>
+        <td><%= link_to "Pay", pay_order_path if @order_items.count > 0 && @order.open? %></td>
+        <td><%= link_to "New Order", new_order_path %></td>
+      </tr>
   </tbody>
 </table>
-<p><%= link_to "Send to Kitchen", send_to_kitchen_order_path if @order_items.count > 0 %></p>
+<p><%= link_to "Send to Kitchen", send_to_kitchen_order_path if @order_items.count > 0 && @order.open? %></p>
 
 <hr>
 
@@ -46,7 +54,7 @@
       <th>Ingredients</th>
       <th>Price</th>
       <th>Available</th>
-      <th colspan="3"></th>
+      <th colspan="1"></th>
     </tr>
   </thead>
 
@@ -64,7 +72,7 @@
             <%= hidden_field_tag :kitchen_id, product.kitchen.id %>
             <%= hidden_field_tag :order_id, @order.id %>
             <%= hidden_field_tag :quantity, 1 %>
-            <%= submit_tag "Add to Order" %>
+            <%= submit_tag "Add to Order" if @order.open? %>
           <% end %>
         </td>
       </tr>

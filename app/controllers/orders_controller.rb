@@ -91,12 +91,13 @@ class OrdersController < ApplicationController
   def pay
     total = 0
     @order.order_items.each do |item|
-      if item.accepted?
-        sub_total += item.price
-        item.product_variants.each do |variant|
-          total += variant.add_on_price
-        end
-        total += sub_total * quantity
+      sub_total = 0
+      if item.accepted? || item.paid?
+        sub_total += item.selected_product.price
+        # item.product_variants.each do |variant|
+        #   total += variant.add_on_price
+        # end
+        total += sub_total * item.quantity
         item.paid!
       end
     end
@@ -105,9 +106,7 @@ class OrdersController < ApplicationController
 
     # close the order
     @order.closed!
-
-    # return total amount paid
-    total
+    redirect_to order_path(@order)
   end
 
   private

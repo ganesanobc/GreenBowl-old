@@ -1,7 +1,5 @@
-<p id="notice"><%= notice %></p>
-
 <p>
-  <strong>Name:</strong>
+  <strong>Kitchen:</strong>
   <%= @kitchen.name %>
 </p>
 
@@ -12,8 +10,35 @@
 
 <p>
   <strong>Restaurant:</strong>
-  <%= @kitchen.restaurant %>
+  <%= @kitchen.restaurant.brand_name %>
 </p>
 
-<%= link_to 'Edit', edit_kitchen_path(@kitchen) %> |
-<%= link_to 'Back', kitchens_path %>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Title</th>
+      <th>Quantity</th>
+      <th>State</th>
+      <th colspan="2"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @order_items.each do |item| %>
+      <% @product = item.selected_product %>
+      <tr>
+        <td><%= item.id %></td>
+        <td><%= @product.title %></td>
+        <td><%= item.quantity %></td>
+        <td>$ <%= item.state %></td>
+        <% if item.sent_to_kitchen? %>
+          <td><%= link_to 'Accept', accept_order_item_path(item) %></td>
+          <td><%= link_to 'Out of Stock', reject_order_item_path(item) %></td>
+        <% else %>
+          <td colspan="2"><%= link_to 'Ready', prepared_order_item_path(item) if item.paid? %></td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
