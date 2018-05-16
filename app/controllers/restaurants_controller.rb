@@ -18,6 +18,14 @@ class RestaurantsController < ApplicationController
   # GET /restaurants/1
   # GET /restaurants/1.json
   def show
+    # if logged in as customer, then show the current restaurant's products
+    if !current_admin
+      if !current_customer
+        authenticate_customer!
+      end
+      session[:restaurant] = @restaurant.id
+      redirect_to products_path
+    end
   end
 
   # GET /restaurants/new

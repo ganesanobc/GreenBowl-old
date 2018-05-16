@@ -5,37 +5,41 @@ class OrdersController < ApplicationController
   # GET /orders
   # GET /orders.json
   def index
+    # should show all past and present orders
     @orders = current_customer.orders
   end
 
   # GET /orders/1
   # GET /orders/1.json
   def show
-  end
-
-  # GET /orders/new
-  def new
-    @order = current_customer.orders.build()
-  end
-
-  # GET /orders/1/edit
-  def edit
+    # should show the selected order
   end
 
   # POST /orders
   # POST /orders.json
-  def create
-    @order = current_customer.orders.build(order_params)
+  def new
+    # check if there is an existing order that was accessed in the last 15 mins
+    # but is still open
+    # else create a new order for the current customer
+    @order = last_valid_open_order
 
     respond_to do |format|
       if @order.save
         format.html { redirect_to @order, notice: 'Order was successfully created.' }
         format.json { render :show, status: :created, location: @order }
+        # save the order to session and start the expiry
+        start_order_session(@order)
+        redirect_to restaurants_path
       else
         format.html { render :new }
         format.json { render json: @order.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  # GET /orders/1/edit
+  def edit
+    # to allow customer to remove products or adjust the quantity
   end
 
   # PATCH/PUT /orders/1
@@ -82,6 +86,13 @@ class OrdersController < ApplicationController
         item.paid!
       end
     end
+
+    #TODO: process payment
+
+    # close the order
+    @order.closed!
+
+    # return total amount paid
     total
   end
 
@@ -94,5 +105,24 @@ class OrdersController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def order_params
       params.require(:order).permit(:customer_id)
+    end
+
+    def has_order_session_expired
+      session[:order_expires_at] < Time.current
+    end
+
+    def start_order_session(order)
+      session[:order] = order.id
+      session[:order_expires_at] = Time.current + 15.minutes
+    end
+
+    # Get the last open order created by the customer in the last 30 mins
+    def last_valid_open_order
+      order = Order.find(session[:order])
+      if has_order_session_expired
+        order.destroy if !order.nil?
+        order = nil
+      end
+      order = current_customer.orders.build() unless !order.nil? && order.open?
     end
 end
