@@ -30,17 +30,16 @@ Create a food ordering system for restaurants and foodcourts.
   - ~~Customer adds a new order item from product~~
   - ~~Customer browses the products page again~~
   - ~~Customer adds another new order item from product~~
-  - ~~Customer sends order to kitchen~~
-4. ~~Create workflow for Kitchen to accept new order items~~
-  - ~~Operator will view all new order items~~
-  - ~~Operator will accept some new order items~~
-  - ~~Operator will reject some new order items~~
-5. ~~Create workflow for Customer to pay for accepted order items only~~
-  - ~~Customer will view the revised order~~
-  - ~~Customer will pay for order~~
-6. ~~Create workflow for Kitchen to notify prepared status~~
+  - ~~Customer pays for order and order is sent to kitchen~~
+4. ~~Create workflow for Kitchen to notify prepared status~~
   - ~~Operator will view all paid order items~~
   - ~~Operator will set one order item as prepared~~
+5. ~~Archive order if already fulfilled when customer views it again~~
+  ~~- when the order is not yet fulfilled but closed, a new order will not be created unless~~
+    ~~- explicitly requested for using the New Order button, or~~
+    ~~- if they rescan the QR code~~
+6. Customers should be able to browse their orders created (and closed) in the last 48 hours
+7. Customers should be able to recreate their past orders
 
 ### Phase 4: Security and Integration Testing
 1. Customise the user models to match schema.

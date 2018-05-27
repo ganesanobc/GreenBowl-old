@@ -5,11 +5,13 @@ one:
   description: MyText
   ingredients: MyText
   price: 9.99
-  available: 1
+  available: "available"
+  kitchen: one
 
 two:
   title: MyString
   description: MyText
   ingredients: MyText
   price: 9.99
-  available: 1
+  available: "not_available"
+  kitchen: one

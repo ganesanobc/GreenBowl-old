@@ -12,38 +12,43 @@ class OrdersController < ApplicationController
   # GET /orders/1
   # GET /orders/1.json
   def show
+    # check for valid restaurant
+    restaurant_id = session[:restaurant]
+    redirect_to orders_path if restaurant_id.nil?
+    restaurant = Restaurant.find(restaurant_id)
+    @restaurant_name = restaurant.brand_name
+    @products = restaurant.products
+
     # show the current order items
     @order_items = @order.order_items
 
-    # show the menu at the bottom of page
-    restaurant = Restaurant.find(session[:restaurant])
-    if !restaurant.nil?
-      @restaurant_name = restaurant.brand_name
-      @products = restaurant.products
-    end
+    # archive current order if already fulfilled
+    @order.archived! if @order.closed? && can_archive_order?(@order)
+
+    # restart the session timer
+    restart_order_session(@order)
   end
 
   # POST /orders
   # POST /orders.json
   def new
-    # check if there is an existing order that was accessed in the last 15 mins
-    # but is still open
-    # else create a new order for the current customer
-    @order = last_valid_open_order
+    # get current customer
+    customer = current_customer
 
-    # save the order to session and start the expiry
-    restart_order_session(@order)
-    redirect_to order_path(@order)
+    # create new order from session
+    order = customer.orders.find(session[:order]) if session.has_key?(:order)
 
-    # respond_to do |format|
-    #   if @order.save
-    #     format.html { redirect_to @order, notice: 'Order was successfully created.' }
-    #     format.json { render :show, status: :created, location: @order }
-    #   else
-    #     format.html { render :new }
-    #     format.json { render json: @order.errors, status: :unprocessable_entity }
-    #   end
-    # end
+    # validate the order from session
+    order = validate_order(order)
+
+    # create a new order if still empty
+    order = customer.orders.open.create!() if order.nil?
+
+    # restart the session timer
+    restart_order_session(order)
+
+    # show the order
+    redirect_to order_path(order)
   end
 
   # GET /orders/1/edit
@@ -69,8 +74,9 @@ class OrdersController < ApplicationController
   # DELETE /orders/1.json
   def destroy
     @order.destroy
+    session.delete(:order)
     respond_to do |format|
-      format.html { redirect_to orders_url, notice: 'Order was successfully destroyed.' }
+      format.html { redirect_to new_order_path, notice: 'New order created.' }
       format.json { head :no_content }
     end
   end
@@ -110,32 +116,50 @@ class OrdersController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_order
-      @order = current_customer.orders.find(params[:id])
-    end
-
     # Never trust parameters from the scary internet, only allow the white list through.
     def order_params
       params.require(:order).permit(:customer_id)
     end
 
-    def has_order_session_expired
+    # Use callbacks to share common setup or constraints between actions.
+    def set_order
+      @order = current_customer.orders.find(params[:id])
+    end
+
+    # Check if order session has expired
+    def has_order_session_expired?
       !session[:order_expires_at].nil? && session[:order_expires_at] < Time.current
     end
 
+    # Check if the order can be archived by checking all the order items have been fulfilled
+    # or if the order is too old to be meaningful
+    def can_archive_order?(order)
+      all_delivered = true
+      order.order_items.each { |item| all_delivered &= item.prepared? }
+      all_delivered && (Time.current > order.updated_at + 2.days)
+    end
+
+    # Restart the order session
     def restart_order_session(order)
       session[:order] = order.id
       session[:order_expires_at] = Time.current + 15.minutes
     end
 
-    # Get the last open order created by the customer in the last 30 mins
-    def last_valid_open_order
-      order = Order.find(session[:order]) unless session[:order].nil?
-      if !order.nil?
-        order.destroy if order.open? && has_order_session_expired
-        order = nil
+    # Validate that the order for the new action
+    def validate_order(order)
+      unless order.nil?
+        if order.open? && has_order_session_expired?
+          # destroy abandoned order
+          order.destroy!
+          order = nil
+        elsif order.closed?
+          # archive last order
+          order.archived! if can_archive_order?(order)
+          order = nil
+        elsif order.archived?
+          order = nil
+        end
       end
-      order = current_customer.orders.create!() if order.nil?
+      order
     end
 end

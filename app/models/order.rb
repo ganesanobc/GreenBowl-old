@@ -4,7 +4,7 @@ class Order < ApplicationRecord
   has_many :order_items
 
   # validations
-  enum status: [:open, :closed]
+  enum status: [:open, :closed, :archived]
 
   # helpers
   def total

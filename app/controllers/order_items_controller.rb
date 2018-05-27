@@ -24,25 +24,20 @@ class OrderItemsController < ApplicationController
   # POST /order_items
   # POST /order_items.json
   def create
-    order = Order.find(order_item_params[:order_id])
-    kitchen = Kitchen.find(order_item_params[:kitchen_id])
 
-    @order_item = kitchen.order_items.in_creation.build(order_item_params)
-    @order_item.selected_product_id = order_item_params[:product_id]
-    @order_item.save!
+    order = Order.find(order_item_params[:order_id])
+    if !order.nil? && order.open?
+      # get the kitchen object
+      kitchen = Kitchen.find(order_item_params[:kitchen_id])
+
+      # create the new order item in accepted mode
+      @order_item = kitchen.order_items.accepted.create!(order_item_params)
+    else
+      flash[:error] = 'Order is closed! Create a new order to add more items.'
+    end
 
     restart_order_session(order)
     redirect_to order_path(order)
-
-    # respond_to do |format|
-    #   if @order_item.save
-    #     format.html { redirect_to @order_item, notice: 'Order item was successfully created.' }
-    #     format.json { render :show, status: :created, location: @order_item }
-    #   else
-    #     format.html { render :new }
-    #     format.json { render json: @order_item.errors, status: :unprocessable_entity }
-    #   end
-    # end
   end
 
   # PATCH/PUT /order_items/1

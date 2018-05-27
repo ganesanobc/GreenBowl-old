@@ -1,4 +1,4 @@
-<p> Order #: <%= @order.id %></p>
+<p> Order #: <%= @order.id %> (<%= @order.status %>)</p>
 <table>
   <thead>
     <tr>
@@ -25,19 +25,23 @@
         <td>$ <%= @product.price %></td>
         <td><%= item.quantity %></td>
         <td>$ <%= item.quantity * @product.price %></td>
-        <td>$ <%= item.state %></td>
-        <td><%= link_to 'Destroy', item, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= item.state %></td>
+        <td><%= link_to 'Remove Item', item, method: :delete, data: { confirm: 'Are you sure?' } if @order_items.count > 0 && @order.open? %></td>
       </tr>
     <% end %>
       <tr>
         <td colspan="5"></td>
         <td>$ <%= @order.total %></td>
-        <td><%= link_to "Pay", pay_order_path if @order_items.count > 0 && @order.open? %></td>
-        <td><%= link_to "New Order", new_order_path %></td>
+        <% if @order.open? %>
+          <td><%= link_to "Pay", pay_order_path if @order_items.count > 0 %></td>
+          <td><%= link_to 'Reset Order', @order, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <% else %>
+          <td colspan="2"><%= link_to 'New Order', new_order_path %></td>
+        <% end %>
       </tr>
   </tbody>
 </table>
-<p><%= link_to "Send to Kitchen", send_to_kitchen_order_path if @order_items.count > 0 && @order.open? %></p>
+<!--p><%= link_to "Send to Kitchen", send_to_kitchen_order_path if @order_items.count > 0 && @order.open? %></p-->
 
 <hr>
 
@@ -72,7 +76,7 @@
             <%= hidden_field_tag :kitchen_id, product.kitchen.id %>
             <%= hidden_field_tag :order_id, @order.id %>
             <%= hidden_field_tag :quantity, 1 %>
-            <%= submit_tag "Add to Order" if @order.open? %>
+            <%= submit_tag "Add to Order" if @order.open? && product.available? %>
           <% end %>
         </td>
       </tr>

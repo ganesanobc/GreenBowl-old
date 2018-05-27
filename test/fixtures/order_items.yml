@@ -2,10 +2,10 @@
 
 one:
   quantity: 1
-  state: 1
+  state: "accepted"
   kitchen: one
 
 two:
   quantity: 1
-  state: 1
-  kitchen: two
+  state: "accepted"
+  kitchen: one
