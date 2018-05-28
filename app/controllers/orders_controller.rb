@@ -6,7 +6,7 @@ class OrdersController < ApplicationController
   # GET /orders.json
   def index
     # should show all past and present orders
-    @orders = current_customer.orders
+    @orders = current_customer.orders.where("created_at > ?", Time.current - 2.days ).order(created_at: :desc)
   end
 
   # GET /orders/1
@@ -15,6 +15,8 @@ class OrdersController < ApplicationController
     # check for valid restaurant
     restaurant_id = session[:restaurant]
     redirect_to orders_path if restaurant_id.nil?
+
+    # load the restaurant and associated products
     restaurant = Restaurant.find(restaurant_id)
     @restaurant_name = restaurant.brand_name
     @products = restaurant.products
