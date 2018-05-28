@@ -1,6 +1,7 @@
 class Product < ApplicationRecord
   # relationships
   belongs_to :kitchen
+  has_one_attached :image
 
   has_many :product_variants
   has_many :product_categories

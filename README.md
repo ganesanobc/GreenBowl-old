@@ -40,6 +40,17 @@ Create a food ordering system for restaurants and foodcourts.
     ~~- if they rescan the QR code~~
 6. ~~Customers should be able to browse their orders created (and closed) in the last 48 hours~~
 
+### Phase 4: Enhancing Look and Feel for Customers' Order Page
+1. ~~Install ActiveStorage to facilitate image storage~~
+2. ~~Add photos to Products~~
+3. ~~Order Items should show product photos~~
+4. Resize images for different pages
+  - currently the error report is:
+    gm mogrify: Unrecognized option (-resize-to-fit)
+5. Group the menu into categories
+6. Style the current order page
+7. Style the "all orders" page
+
 ### Phase 4: Security and Integration Testing
 1. Customise the user models to match schema.
 2. Add authentications and roles to Restaurant and Kitchen controllers
@@ -56,9 +67,8 @@ While Product and ProductVariant models are suppose to be administered within th
 Instead we will manipulate them within Kitchen and Category resources*
 
 ### Phase 6: Enhancements
-1. TODO: Paperclip ...
-2. TODO: ActionCable ...
-3. TODO: Bootstrap ...
+1. TODO: install ActionCable
+2. TODO: migrate to AWS or Google Cloud for image upload
 
 
 ---
