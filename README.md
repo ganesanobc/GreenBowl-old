@@ -38,8 +38,7 @@ Create a food ordering system for restaurants and foodcourts.
   ~~- when the order is not yet fulfilled but closed, a new order will not be created unless~~
     ~~- explicitly requested for using the New Order button, or~~
     ~~- if they rescan the QR code~~
-6. Customers should be able to browse their orders created (and closed) in the last 48 hours
-7. Customers should be able to recreate their past orders
+6. ~~Customers should be able to browse their orders created (and closed) in the last 48 hours~~
 
 ### Phase 4: Security and Integration Testing
 1. Customise the user models to match schema.
