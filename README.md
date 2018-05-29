@@ -45,9 +45,11 @@ Create a food ordering system for restaurants and foodcourts.
 2. ~~Add photos to Products~~
 3. ~~Order Items should show product photos~~
 4. ~~Resize images for different pages~~
-5. Group the menu into categories
-6. Style the current order page
-7. Style the "all orders" page
+5. ~~Correction: make sure that new orders only if there is no existing valid orders unless called for a reset order~~
+6. ~~Show only the available products in the order page~~
+7. ~~Group the menu into categories~~
+8. Style the current order page
+9. Style the "all orders" page
 
 ### Phase 4: Security and Integration Testing
 1. Customise the user models to match schema.

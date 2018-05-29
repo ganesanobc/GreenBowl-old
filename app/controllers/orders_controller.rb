@@ -7,6 +7,8 @@ class OrdersController < ApplicationController
   def index
     # should show all past and present orders
     @orders = current_customer.orders.where("created_at > ?", Time.current - 2.days ).order(created_at: :desc)
+    @orders.each { |order| order.archived! if can_archive_order?(order) }
+    @orders
   end
 
   # GET /orders/1
@@ -19,7 +21,7 @@ class OrdersController < ApplicationController
     # load the restaurant and associated products
     restaurant = Restaurant.find(restaurant_id)
     @restaurant_name = restaurant.brand_name
-    @products = restaurant.products
+    @categories = restaurant.categories
 
     # show the current order items
     @order_items = @order.order_items
@@ -37,8 +39,14 @@ class OrdersController < ApplicationController
     # get current customer
     customer = current_customer
 
-    # create new order from session
-    order = customer.orders.find(session[:order]) if session.has_key?(:order)
+    # create new order from session or get the last order
+    unless customer.orders.nil?
+      begin
+        order = customer.orders.find(session[:order]) if session.has_key?(:order)
+      rescue => e
+        order = customer.orders.last
+      end
+    end
 
     # validate the order from session
     order = validate_order(order)

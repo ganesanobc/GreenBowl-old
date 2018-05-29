@@ -1,4 +1,7 @@
 class Product < ApplicationRecord
+  # scopes
+  scope :only_available, -> { where(available: 'available') }
+
   # relationships
   belongs_to :kitchen
   has_one_attached :image

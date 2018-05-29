@@ -27,14 +27,14 @@
         <td><%= item.quantity %></td>
         <td>$ <%= item.quantity * @product.price %></td>
         <td><%= item.state %></td>
-        <td><%= link_to 'Remove Item', item, method: :delete, data: { confirm: 'Are you sure?' } if @order_items.count > 0 && @order.open? %></td>
+        <td><%= link_to 'Remove Item', item, method: :delete, data: { confirm: 'Are you sure?' } if @order.open? %></td>
       </tr>
     <% end %>
       <tr>
         <td colspan="5"></td>
         <td>$ <%= @order.total %></td>
         <% if @order.open? %>
-          <td><%= link_to "Pay", pay_order_path if @order_items.count > 0 %></td>
+          <td><%= link_to "Pay", pay_order_path if @order.total > 0 %></td>
           <td><%= link_to 'Reset Order', @order, method: :delete, data: { confirm: 'Are you sure?' } %></td>
         <% else %>
           <td colspan="2"><%= link_to 'New Order', new_order_path %></td>
@@ -51,31 +51,24 @@
   <%= @restaurant_name %>
 </p>
 
-<table>
-  <thead>
-    <tr>
-      <th>Title</th>
-      <th>Description</th>
-      <th>Price</th>
-      <th>Available</th>
-      <th colspan="1"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @products.each do |product| %>
-      <tr>
-        <td>
-          <p><%= product.title %></p>
-          <p><%= image_tag product.image.variant(resize: "100x100") if product.image.attached? %></p>
-        </td>
-        <td>
-          <p><%= product.description %></p>
-          <p><em><%= product.ingredients %></em></p>
-        </td>
-        <td>$ <%= product.price %></td>
-        <td><%= product.available %></td>
-        <td>
+<p>
+  <% @categories.each do |category| %>
+    <% category.products.each do |product| %>
+      <p>
+        <div class="">
+          <h2><%= category.title %></h2>
+        </div>
+        <div class"">
+          <%= product.title %> : $ <%= product.price %>
+          <br/>
+          <%= image_tag product.image.variant(resize: "100x100") if product.image.attached? %>
+        </div>
+        <div class="">
+          <%= product.description %>
+          <br>
+          <em><%= product.ingredients %></em>
+        </div>
+        <div class="">
           <%= form_tag url_for(:controller => 'order_items', :action => 'create'), :method => 'post' do %>
             <%= hidden_field_tag :product_id, product.id %>
             <%= hidden_field_tag :kitchen_id, product.kitchen.id %>
@@ -83,8 +76,8 @@
             <%= hidden_field_tag :quantity, 1 %>
             <%= submit_tag "Add to Order" if @order.open? && product.available? %>
           <% end %>
-        </td>
-      </tr>
+        </div>
+      </p>
     <% end %>
-  </tbody>
-</table>
+  <% end %>
+</p>
