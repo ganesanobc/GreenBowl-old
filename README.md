@@ -44,9 +44,7 @@ Create a food ordering system for restaurants and foodcourts.
 1. ~~Install ActiveStorage to facilitate image storage~~
 2. ~~Add photos to Products~~
 3. ~~Order Items should show product photos~~
-4. Resize images for different pages
-  - currently the error report is:
-    gm mogrify: Unrecognized option (-resize-to-fit)
+4. ~~Resize images for different pages~~
 5. Group the menu into categories
 6. Style the current order page
 7. Style the "all orders" page
