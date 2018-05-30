@@ -32,6 +32,12 @@
   </div>
 
   <div class="field">
+    <%= form.label :available %>
+    <%= form.select :available, ['available', 'not_available'], include_blank: false %>
+    <!--%= form.hidden_field :available, value: 'available' %-->
+  </div>
+
+  <div class="field">
     <%= form.label :kitchen_id %>
     <%= form.number_field :kitchen_id %>
   </div>

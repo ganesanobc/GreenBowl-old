@@ -6,9 +6,15 @@ class OrdersController < ApplicationController
   # GET /orders.json
   def index
     # should show all past and present orders
-    @orders = current_customer.orders.where("created_at > ?", Time.current - 2.days ).order(created_at: :desc)
-    @orders.each { |order| order.archived! if can_archive_order?(order) }
-    @orders
+    orders = current_customer.orders.where("created_at > ?", Time.current - 2.days ).order(created_at: :desc)
+    unless orders.nil?
+      @orders = orders.map do |order|
+        order.destroy! if is_dropped_order?(order)
+        order.archived! if can_archive_order?(order)
+        order
+      end
+      @can_create_new_order = session.has_key?(:restaurant)
+    end
   end
 
   # GET /orders/1
@@ -137,16 +143,33 @@ class OrdersController < ApplicationController
     end
 
     # Check if order session has expired
-    def has_order_session_expired?
-      !session[:order_expires_at].nil? && session[:order_expires_at] < Time.current
+    def has_order_session_expired?(order)
+      !session[:order_expires_at].nil? &&
+        session[:order_expires_at] < Time.current
     end
 
     # Check if the order can be archived by checking all the order items have been fulfilled
     # or if the order is too old to be meaningful
     def can_archive_order?(order)
-      all_delivered = true
-      order.order_items.each { |item| all_delivered &= item.prepared? }
-      all_delivered && (Time.current > order.updated_at + 2.days)
+      can_archive = false
+      unless order.nil?
+        can_archive = order.closed?
+        order.order_items.each { |item| can_archive &= item.prepared? }
+        can_archive &= (Time.current > order.updated_at + 2.days)
+      end
+      can_archive
+    end
+
+    # Check if the order can be deleted by checking that the order is open
+    # but has no items and not there is a newer order
+    def is_dropped_order?(order)
+      is_dropped = true
+      unless order.nil?
+        is_dropped = (order.open?) &&
+          (order.order_items.count == 0) &&
+          (Time.current > order.updated_at + 15.minutes)
+      end
+      is_dropped
     end
 
     # Restart the order session
@@ -158,7 +181,7 @@ class OrdersController < ApplicationController
     # Validate that the order for the new action
     def validate_order(order)
       unless order.nil?
-        if order.open? && has_order_session_expired?
+        if order.open? && has_order_session_expired?(order)
           # destroy abandoned order
           order.destroy!
           order = nil
